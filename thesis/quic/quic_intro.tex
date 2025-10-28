@@ -1,0 +1,30 @@
+\section{Osnovni mrežni protokoli na transportnom nivou}
+
+\subsection{\textit{TCP} mrežni protokol}
+\textit{\textbf{TCP}} \textbf{protokol} predstavlja osnovu internet komunikacije današnjeg doba. Protokol ima za cilj davanje interfejsa pri komunikaciji među dva čvora u mreži. Podaci se, kroz \textit{TCP} protokol, šalju \textit{u oktetnim paketima}, i to na \textbf{pouzdan}, \textbf{uređen način}. Naime, svaki od paketa je markiran \textit{rednim brojem u sekvenci paketa}, kao i \textit{kontrolnu sumu}, a ako se desi \textit{nestanak jednog} ili \textit{greška u jednom od datih}, sam protokol konstantuje \textit{neregularno stanje}. U ovom slučaju, \textit{TCP} koristi \textit{ARQ} (akronim za \textit{automatic repeat request}, engl.) mehanizam, gdje pokušava da \textit{ponovo pošalje podatke}.
+
+U većini implementacija \textit{TCP} protokola, kada se detektuje greška u komunikaciji, poziva se \textit{blokirajuća operacija} gdje se svi naredni transferi \textit{zaustavljaju} \textit{ili dok ne dođe do uspješnog ponovnog slanja paketa}, \textit{ili dok se konekcija ne prekine}. To je posljedica činjenice da se \textit{TCP} protokolom uspostavlja isključivo \textit{jedan kanal} (engl. \textit{pipe}, \textit{stream}), te je jasno da \textit{performanse komunikacije bivaju degradirane} (kao što je slučaj kod \textit{HTTP}/2 protokola\footnote{Iako je \textit{HTTP}/2 protokol uveo više kanala, to je isključivo implementacija na aplikativnom nivou - u pozadini se oni \textit{multipleksiraju} na jednom \textit{TCP} kanalu. Svakako, ovo predstavlja poboljšanje u odnosu na \textit{HTTP}/1 protokol.}, koji se, kao što je poznato, oslanja na \textit{TCP}). Ovaj problem u literaturi je poznat kao \textit{head-of-line blocking}.
+
+Pomenuti \textit{TCP} protokol \textit{namjerno mimikuje} \textit{data}-\textit{pipe} i kao takav poznaje malo informacija o podacima koje prenosi. Usljed inherentnog trajanja prenosa u komunikaciji između udaljenih čvorova u mreži, svaki dodatan zahtjev nad podacima (kao što je, recimo, \textit{enkripcija} koristeći \textit{TLS}) unosi dodatnu latentnost, kako je potrebno više \textit{razmjena} radi ostvarivanja konekcije.
+
+\subsection{Uspostavljanje konekcije između čvorova kroz \textit{TCP} protokol}
+
+Operacije \textit{TCP} protokola mogu biti podjeljenje u tri faze
+\begin{itemize}
+    \item \textbf{Uspostavljanje konekcije} između dva čvora, što uključuje višekoračni proces \enquote{rukovanja} (engl. \textit{handshake}).
+    \item \textbf{Period transfera podataka}.
+    \item \textbf{Prekid konekcije}, nakon završetka prenosa podataka, nakon čega dolazi do oslobađanja zauzetih resursa na čvorovima.
+\end{itemize}
+
+\subsection{\textit{UDP} mrežni protokol}
+
+\section{\textit{QUIC} mrežni protokol kao poboljšanje \textit{TCP} protokola}
+
+\textit{\textbf{QUIC}} \textbf{mrežni protokol} predstavlja protokol opšte namjene koji \textit{dejstvuje na transportnom sloju}, razvijen od strane \textit{Google}-a. Dati protokol je pojavljivanjem donio poboljšanje performansi mrežnih aplikacija, koje su se prevashodno oslanjale na klasični \textit{TCP} protokol.
+
+U kontekstu (enkriptovane) \textit{HTTP} komunikacije, \textit{QUIC} protokol pokušava premostiti ograničenja \textit{TCP} protokola koje se tiču latentnosti i oporavka od greške. Primarno, \textit{QUIC} pomenuto uspjeva na dva načina
+\begin{itemize}
+    \item \textbf{Redukcija \textit{troška} u komunikaciji kroz inicijalnu fazu povezivanja}. Kako većina \textit{HTTP} konekcija zahtjeva \textit{TLS} danas, \textit{QUIC} protokol tokom inicijalnog \textit{handshake} procesa (inicijalog otvaranja konekcije), \textbf{prirodaje i potrebne ključeve za uspostavljanje sigurne konekcije}. Ovakav način dejstvovanja ogromno redukuje potrebu konstantnog \textit{pregovora} oko sigurnosnog protokola, jer se sigurnosni podaci \textit{čuvaju} za svaki narednu komunikaciju dvaju strana.
+    \item \textbf{Korištenje \textit{UDP} umjesto \textbf{TCP} protokola kao osnovu}. Međutim, kao što je i prethodno pomenuto, \textit{UDP} protokol ne sadrži oporavak od gubitka paketa. Kako bi \textit{QUIC} prevazišao ovaj nedostatak, \textit{retransmisija izgubljenih paketa} je implementirana na \textit{QUIC} sloju, umjesto na \textit{UDP} sloju. Takođe, \textit{QUIC} \enquote{otvara} \textit{međusobno odvojene kanale komunikacije}, što omogućava neblokirajuću operaciju slanja paketa i u slučaju kada se pojavi potreba za retransmisijom podataka, za razliku od \textit{TCP} protokola.
+\end{itemize}
+
