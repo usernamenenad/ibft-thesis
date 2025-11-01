@@ -1,10 +1,10 @@
 \documentclass{report}
 
 \usepackage{graphicx} 
+\usepackage[utf8]{inputenc}
+\usepackage[OT2, T1]{fontenc}
 \usepackage{cmsrb}
-\usepackage[OT2,T1]{fontenc} 
-\usepackage[serbian]{babel}
-\usepackage{mathpazo}
+\usepackage[english,serbianc]{babel}
 \usepackage{csquotes}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -16,6 +16,11 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{listings}
+\usepackage[margin=1in]{geometry}
+
+\let\temp\rmdefault
+\usepackage{mathpazo}
+\let\rmdefault\temp
 
 \pgfplotsset{compat=1.18}
 
