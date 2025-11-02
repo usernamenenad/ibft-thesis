@@ -28,5 +28,11 @@ Tolerancija na otkaze je tema koja se decenijama prožima kroz naučno-istraživ
 
 Do sada smo pričali o osobinama sistema tolerantnog na otkaze, davši i određenu apstrakciju otkaza po kojima se oni dijele po njihovim učestanostima. Međutim, od koristi bi nam bilo i detaljnjije klasifikovati otkaze, na osnovu \textit{njihovog uzroka}. Autori radova na ovu temu definišu nekoliko tipova otkaza koji objašnjavaju njihov uzrok
 \begin{itemize}
-    \item \textbf{Otkaz usljed krahiranja} 
+    \item \textbf{Otkaz usljed krahiranja} dešava se kada čvor prevremeno krahira, ali njegova funkcionalnost nije bila narušena prije toga. Važan aspekat ovog modela jeste da, kada se ovakav tip otkaza desi, čvor više ne odgovara na zahtjeve.
+    \item \textbf{Otkaz usljed propusta zahtjeva} modeluje otkaz nastao usljed bezuspješnog odgovora čvora na zahtjev. Pretpostavljajući da je čvor funkcionalan, te da se nije desio otkaz usljed krahiranja, moguće su dvije alternative propusta zahtjeva
+    \begin{itemize}
+        \item čvor uopšte nije ni dobio zahtjev
+        \item čvor jeste dobio zahtjev, ali nije uspio da pošalje odgovor
+    \end{itemize}
+    \item \textbf{Temporarni otkazi} koji, za razliku od prethodnih otkaza, govore o neuspjehu opsluživanja klijenta u zadatom vremenskom intervalu (koji čak može biti i u realnom vremenu), a što često povezujemo i sa \textit{penalima u performansama sistema}.
 \end{itemize}

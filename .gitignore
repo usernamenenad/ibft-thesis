@@ -5,3 +5,10 @@
 *.synctex.gz
 *.out
 *.pdf
+*.blg
+*.bcf
+*.bcf-SAVE-ERROR
+*.bbl
+*.bbl-SAVE-ERROR
+*.run.xml
+*.toc

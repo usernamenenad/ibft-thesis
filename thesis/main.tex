@@ -16,23 +16,28 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{listings}
+\usepackage[backend=biber,style=ieee]{biblatex}
+
+\addbibresource{refs.bib}
 
 \let\temp\rmdefault
 \usepackage{mathpazo}
 \let\rmdefault\temp
 
 \pgfplotsset{compat=1.18}
-\setlength\emergencystretch{2em}
-\tolerance=800           
-\hyphenpenalty=50
-\exhyphenpenalty=50
 
 \begin{document}
+\sloppy
+
+\input{titlepage.tex}
 
 \tableofcontents
 
-\chapter{Konsenzus algoritmi i latentnost mreže}
+\chapter{Otkazi u distribuiranim sistemima}
 \input{consensus/main.tex}
+
+\chapter{Algoritmi konsenzusa kao odgovor na vizantijske otkaze}
+\input{bft/main.tex}
 
 \chapter{Osnove mrežnih protokola na tradicionalnom transportnom sloju}
 \input{ntw/main.tex}
@@ -40,7 +45,12 @@
 \chapter{\textit{\textlatin{QUIC}} protokol}
 \input{quic/main.tex}
 
-\chapter{\textit{\textlatin{IBFT}} konsenzus algoritam}
-\input{ibft/main.tex}
+\chapter{Studija slučaja - \textit{\textlatin{IBFT}} algoritam}
+
+\newpage
+\chapter*{Bibliografija}  
+\begin{otherlanguage*}{english}
+\printbibliography[heading=none]
+\end{otherlanguage*}
 
 \end{document}
