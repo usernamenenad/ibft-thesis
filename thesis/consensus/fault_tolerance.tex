@@ -1,0 +1,32 @@
+\section{Tolerancija na otkaze}
+Karakteristično svojstvo distribuiranih sistema koji ih razlikuju od sistema na jednoj mašini jeste \textit{pojam o djelimičnom otkazu} - prihvatljivost činjenice da dio sistema ne funkcioniše onako \textit{kako bi trebalo} (\textit{kako je zamišljeno}) a da sistem daje predstavu kao da je \enquote{sve u redu}. Pod pojmom \textit{otkaza}, pokušavamo dati abstrakciju nad time \enquote{šta to loše može poći u sistemu} - komunikaciona mreža ne funkcioniše, čvorovi su krahirali ili se ponašaju maliciozno su neki od primjera. Generalno, pomenutu apstrakciju otkaza klasifikujemo kao
+\begin{enumerate}
+    \item \textit{tranzijentnu}, gdje se dati otkazi dešavaju isključivo jednom, te nestanu u potpunosti.
+    \item \textit{ponovljenu}, koji se dešavaju repetitivno u određenim periodama vremena.
+    \item \textit{permanentnu}, gdje otkazi postoje sve dok komponenta koja ih ne uzrokuje bude otklonjena.
+\end{enumerate}
+
+Izgradnja distribuiranog sistema usko je povezana sa kontrolom otkaza. Naime, postoji distinkcija između prevencije, tolerancije, otklanjanja i previda otkaza, a svaka od pomenutih akcija mora biti \enquote{dobro} implementirane i kontrolisane kako bi sistem nesmetano funkcionisao. Od našeg najvećeg interesa jeste osobina \textbf{tolerancije na otkaze}, koja, ako implementirana, \textbf{daje sistemu osobinu funkcionisanja i pružanja servisa i u slučaju kada postoje otkazi}.
+
+Tolerancija na otkaze je tema koja se decenijama prožima kroz naučno-istraživački rad na polju računarstva. Definišu se četiri osobine pod kojima se smatra da je distribuiran sistem \textit{\textbf{tolerantan na otkaze}}, a to su
+\begin{enumerate}
+    \item \textbf{Dostupnost} (engl. \textit{\textlatin{availability}})
+    \item \textbf{Pouzdanost} (engl. \textit{\textlatin{reliability}})
+    \item \textbf{Sigurnost} (engl. \textit{\textlatin{safety}})
+    \item \textbf{Mogućnost održavanja} (engl. \textit{\textlatin{maintainability}})
+\end{enumerate}
+
+\textbf{Dostupnost} će značiti da je sistem spreman \textit{instantno}\footnote{Kada se kaže \textit{instantno}, ne misli se na vremensku mjeru brzine odgovora, već da je sistem spreman dati odgovor u bilo kom vremenskom trenutku, bez vremenskih perioda nemogućnosti obsluživanja.} dati odgovor na neki zahtjev. Generalno gledajući, ova osobina se odnosi na vjerovatnoću da je sistem \textit{pravilno funkcionalan} u bilo kojem momentu - \textit{visoko dostupni sistem je onaj koji će navjerovatnije raditi u datom trenutku}.
+
+\textbf{Pouzdanost} je definisana kroz svojstvo sistema da je u mogućnosti konstantno obsluživati korisnike, bez otkaza. Data osobina može zvučati kao osobina dostupnosti - međutim, pouzdanost je definisana ne u vremenskom trenutku, već u odnosu na vremenski interval. \textit{Visoko pouzdan sistem je onaj koji će najvjerovatnije raditi bez prekida relativno dugo}.
+
+\textbf{Sigurnost} sistem odnosi se na slučaj krahiranja sistema - ako sistem, zbog bilo kojeg razloga, privremeno ne funkcioniše, iz toga neće ishoditi katastrofalne posljedice.
+
+\textbf{Mogućnost održavanja} distribuiranog sistema govori o tome koliko je lako povratiti krahiran sistem \enquote{na noge}. Visoka mogućnost lakog održavanja sistema može ukazati i na visoku pouzdanost, kako sami sistemi mogu biti lako reparirani usljed otkaza.
+
+\subsection{Modeli otkaza}
+
+Do sada smo pričali o osobinama sistema tolerantnog na otkaze, davši i određenu apstrakciju otkaza po kojima se oni dijele po njihovim učestanostima. Međutim, od koristi bi nam bilo i detaljnjije klasifikovati otkaze, na osnovu \textit{njihovog uzroka}. Autori radova na ovu temu definišu nekoliko tipova otkaza koji objašnjavaju njihov uzrok
+\begin{itemize}
+    \item \textbf{Otkaz usljed krahiranja} 
+\end{itemize}

@@ -1,0 +1,12 @@
+\babel@toc {serbianc}{}\relax 
+\contentsline {chapter}{\numberline {1}Konsenzus algoritmi i latentnost mreže}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Tolerancija na otkaze}{2}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Modeli otkaza}{3}{subsection.1.1.1}%
+\contentsline {section}{\numberline {1.2}Konsenzus u distribuiranim sistemima}{4}{section.1.2}%
+\contentsline {chapter}{\numberline {2}Osnove mrežnih protokola na tradicionalnom transportnom sloju}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}\textit {\textlatin {TCP}} mrežni protokol}{5}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Uspostavljanje konekcije između čvorova kroz \textit {\textlatin {TCP}} protokol}{6}{subsection.2.1.1}%
+\contentsline {section}{\numberline {2.2}\textit {\textlatin {UDP}} protokol}{6}{section.2.2}%
+\contentsline {chapter}{\numberline {3}\textit {\textlatin {QUIC}} protokol}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}\textit {\textlatin {QUIC}} mrežni protokol kao poboljšanje \textit {\textlatin {TCP}} protokola}{7}{section.3.1}%
+\contentsline {chapter}{\numberline {4}\textit {\textlatin {IBFT}} konsenzus algoritam}{9}{chapter.4}%

@@ -1,0 +1,14 @@
+\section{\textit{\textlatin{QUIC}} mrežni protokol kao poboljšanje \textit{\textlatin{TCP}} protokola}
+
+\textit{\textbf{\textlatin{QUIC}}} \textbf{mrežni protokol} predstavlja protokol opšte namjene koji \textit{dejstvuje na transportnom sloju}, razvijen od strane kompanije \textit{Gugl} (engl., \textit{\textlatin{Google}}). Dati protokol je pojavljivanjem donio poboljšanje performansi mrežnih aplikacija, koje su se prevashodno oslanjale na klasični \textit{\textlatin{TCP}} protokol.
+
+U kontekstu (enkriptovane) \textit{\textlatin{HTTP}} komunikacije, \textit{\textlatin{QUIC}} protokol pokušava premostiti ograničenja \textit{\textlatin{TCP}} protokola koje se tiču latentnosti i oporavka od greške. Primarno, \textit{\textlatin{QUIC}} pomenuto uspjeva na dva načina
+\begin{itemize}
+    \item \textbf{Redukcija \textit{troška} u komunikaciji kroz inicijalnu fazu povezivanja}. Kako većina \textit{\textlatin{HTTP}} konekcija zahtjeva \textit{TLS} danas, \textit{\textlatin{QUIC}} protokol tokom inicijalnog \textit{\textlatin{handshake}} procesa (inicijalog otvaranja konekcije), \textbf{prirodaje i potrebne ključeve za uspostavljanje sigurne konekcije}. Ovakav način dejstvovanja ogromno redukuje potrebu konstantnog \textit{pregovora} oko sigurnosnog protokola, jer se sigurnosni podaci \textit{čuvaju} za svaki narednu komunikaciju dvaju strana.
+    \item \textbf{Korištenje \textit{\textlatin{UDP}} umjesto \textbf{\textit{\textlatin{TCP}}} protokola kao osnovu}. Međutim, kao što je i prethodno pomenuto, \textit{\textlatin{UDP}} protokol ne sadrži oporavak od gubitka paketa. Kako bi \textit{\textlatin{QUIC}} prevazišao ovaj nedostatak, \textit{retransmisija izgubljenih paketa} je implementirana na \textit{\textlatin{QUIC}} sloju, umjesto na \textit{\textlatin{UDP}} sloju. Takođe, \textit{\textlatin{QUIC}} \enquote{otvara} \textit{međusobno odvojene kanale komunikacije}, što omogućava \textbf{neblokirajuću} operaciju slanja paketa i u slučaju kada se pojavi potreba za retransmisijom podataka, za razliku od \textit{\textlatin{TCP}} protokola.
+\end{itemize}
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.2]{images/tcp-vs-quic-handshake.png}
+    \caption{Razlika u procesu uspostavljanja komunikacije između \textit{\textlatin{TCP}} i \textit{\textlatin{QUIC}} protokola}
+\end{figure}

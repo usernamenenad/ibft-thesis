@@ -1,4 +1,4 @@
-\documentclass{report}
+\documentclass[12pt, a4paper]{report}
 
 \usepackage{graphicx} 
 \usepackage[utf8]{inputenc}
@@ -16,17 +16,31 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{listings}
-\usepackage[margin=1in]{geometry}
 
 \let\temp\rmdefault
 \usepackage{mathpazo}
 \let\rmdefault\temp
 
 \pgfplotsset{compat=1.18}
+\setlength\emergencystretch{2em}
+\tolerance=800           
+\hyphenpenalty=50
+\exhyphenpenalty=50
 
 \begin{document}
 
-\chapter{Mrežni protokoli}
-\input{quic/quic_intro.tex}
+\tableofcontents
+
+\chapter{Konsenzus algoritmi i latentnost mreže}
+\input{consensus/main.tex}
+
+\chapter{Osnove mrežnih protokola na tradicionalnom transportnom sloju}
+\input{ntw/main.tex}
+
+\chapter{\textit{\textlatin{QUIC}} protokol}
+\input{quic/main.tex}
+
+\chapter{\textit{\textlatin{IBFT}} konsenzus algoritam}
+\input{ibft/main.tex}
 
 \end{document}

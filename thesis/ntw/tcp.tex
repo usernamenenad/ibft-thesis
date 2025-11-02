@@ -1,0 +1,15 @@
+\section{\textit{\textlatin{TCP}} mrežni protokol}
+\textit{\textbf{\textlatin{TCP}}} \textbf{protokol} predstavlja osnovu internet komunikacije današnjeg doba. Protokol ima za cilj pružanje interfejsa pri komunikaciji među dva čvora u mreži. Podaci se, kroz \textit{\textlatin{TCP}} protokol, šalju \textit{u oktetnim paketima}, i to na \textbf{pouzdan}, \textbf{uređen način}. Naime, svaki od paketa je markiran \textit{rednim brojem u sekvenci paketa}, kao i \textit{kontrolnu sumu}, a ako se desi \textit{nestanak jednog} ili \textit{greška u jednom od datih}, sam protokol konstantuje \textit{neregularno stanje}. U ovom slučaju, \textit{\textlatin{TCP}} koristi \textit{\textlatin{ARQ}} (akronim za \textit{\textlatin{automatic repeat request}}, engl.) mehanizam, gdje pokušava da \textit{ponovo pošalje podatke}.
+
+U većini implementacija \textit{\textlatin{TCP}} protokola, kada se detektuje greška u komunikaciji, poziva se \textit{blokirajuća operacija} gdje se svi naredni transferi \textit{zaustavljaju} \textit{ili dok ne dođe do uspješnog ponovnog slanja paketa}, \textit{ili dok se konekcija ne prekine}. To je posljedica činjenice da se \textit{\textlatin{TCP}} protokolom uspostavlja isključivo \textit{jedan kanal} (engl. \textit{\textlatin{pipe}}, \textit{\textit{stream}}), te je jasno da \textit{performanse komunikacije bivaju degradirane} (kao što je slučaj kod \textit{\textlatin{HTTP}}/2 protokola\footnote{Iako je \textit{\textlatin{HTTP}}/2 protokol uveo više kanala, to je isključivo implementacija na aplikativnom nivou - u pozadini se oni \textit{multipleksiraju} na jednom \textit{\textlatin{TCP}} kanalu. Svakako, ovo predstavlja poboljšanje u odnosu na \textit{\textlatin{HTTP}}/1 protokol.}, koji se, kao što je poznato, oslanja na \textit{\textlatin{TCP}}). Ovaj problem u literaturi je poznat kao \textit{\textlatin{head-of-line blocking}}.
+
+Pomenuti \textit{\textlatin{TCP}} protokol \textit{namjerno mimikuje} \textit{\textlatin{data}}-\textit{\textlatin{pipe}} i kao takav poznaje malo informacija o podacima koje prenosi. Usljed inherentnog trajanja prenosa u komunikaciji između udaljenih čvorova u mreži, svaki dodatan zahtjev nad podacima (kao što je, recimo, \textit{enkripcija} koristeći \textit{\textlatin{TLS}}) unosi dodatnu latentnost, kako je potrebno više \textit{razmjena} radi ostvarivanja konekcije.
+
+\subsection{Uspostavljanje konekcije između čvorova kroz \textit{\textlatin{TCP}} protokol}
+
+Operacije \textit{\textlatin{TCP}} protokola podjeljene su u tri faze
+\begin{itemize}
+    \item \textbf{Uspostavljanje konekcije} između dva čvora, što uključuje višekoračni proces \enquote{rukovanja} (engl. \textit{\textlatin{handshake}}).
+    \item \textbf{Period transfera podataka}.
+    \item \textbf{Prekid konekcije}, nakon završetka prenosa podataka, nakon čega dolazi do oslobađanja zauzetih resursa na čvorovima.
+\end{itemize}
