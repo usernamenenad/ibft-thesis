@@ -1,9 +1,7 @@
 \section{\textit{\textlatin{TCP}} mrežni protokol}
-\textit{\textbf{\textlatin{Transmition Control Protocol}}} (skraćeno, \textit{\textbf{\textlatin{TCP}}}) predstavlja protokol na transportnom sloju koji pruža komunikaciju između dva mrežna čvora na \textbf{pouzdan}, \textbf{uređen način}. Naime, svaki od paketa je markiran \textit{rednim brojem u sekvenci paketa}, kao i \textit{kontrolnu sumu}, a ako se desi \textit{nestanak jednog} ili \textit{greška u jednom od datih}, sam protokol konstantuje \textit{neregularno stanje}. U ovom slučaju, \textit{\textlatin{TCP}} koristi \textit{\textlatin{ARQ}} (akronim za \textit{\textlatin{automatic repeat request}}, engl.) mehanizam, gdje pokušava da \textit{ponovo pošalje izgubljene pakete}.
+\textit{\textbf{\textlatin{Transmition Control Protocol}}} (skraćeno, \textit{\textbf{\textlatin{TCP}}}) predstavlja protokol na transportnom sloju koji pruža komunikaciju između dva mrežna čvora na \textbf{pouzdan} i \textbf{uređen način}. Protokol je inherentno \textbf{rezilijentan na greške}, gdje implementira i oporavak od njih. Svaki od paketa koji prolaze kroz \textit{\textlatin{TCP}} protokol markiran je \textit{rednim brojem u sekvenci paketa}, pa noseći i kontrolnu \textit{kontrolnu sumu}, ako se desi \textit{nestanak jednog} ili \textit{greška u jednom od datih}, sam protokol konstantuje \textit{neregularno stanje}. U ovom slučaju, \textit{\textlatin{TCP}} koristi \textit{\textlatin{ARQ}} (akronim za \textit{\textlatin{automatic repeat request}}, engl.) mehanizam, gdje pokušava da \textit{ponovo pošalje izgubljene pakete}.
 
-U većini implementacija \textit{\textlatin{TCP}} protokola, kada se detektuje greška u komunikaciji, poziva se \textit{blokirajuća operacija} gdje se svi naredni transferi \textit{zaustavljaju} \textit{ili dok ne dođe do uspješnog ponovnog slanja paketa}, \textit{ili dok se konekcija ne prekine}. To je posljedica činjenice da se \textit{\textlatin{TCP}} protokolom uspostavlja isključivo \textit{jedan kanal} (engl. \textit{\textlatin{pipe}}, \textit{\textit{stream}}), te je jasno da \textit{performanse komunikacije bivaju degradirane} (kao što je slučaj kod \textit{\textlatin{HTTP}}/2 protokola\footnote{Iako je \textit{\textlatin{HTTP}}/2 protokol uveo više kanala, to je isključivo implementacija na aplikativnom nivou - u pozadini se oni \textit{multipleksiraju} na jednom \textit{\textlatin{TCP}} kanalu. Svakako, ovo predstavlja poboljšanje u odnosu na \textit{\textlatin{HTTP}}/1 protokol.}, koji se, kao što je poznato, oslanja na \textit{\textlatin{TCP}}). Ovaj problem u literaturi je poznat kao \textit{\textlatin{head-of-line blocking}}.
-
-Pomenuti \textit{\textlatin{TCP}} protokol \textit{namjerno mimikuje} \textit{\textlatin{data}}-\textit{\textlatin{pipe}} i kao takav poznaje malo informacija o podacima koje prenosi. Usljed inherentnog trajanja prenosa u komunikaciji između udaljenih čvorova u mreži, svaki dodatan zahtjev nad podacima (kao što je, recimo, \textit{enkripcija} koristeći \textit{\textlatin{TLS}}) unosi dodatnu latentnost, kako je potrebno više \textit{razmjena} radi ostvarivanja konekcije.
+U većini implementacija \textit{\textlatin{TCP}} protokola, kada se detektuje greška u komunikaciji, poziva se \textit{blokirajuća operacija} gdje se svi naredni transferi \textit{zaustavljaju} \textit{ili dok ne dođe do uspješnog ponovnog slanja paketa}, \textit{ili dok se konekcija ne prekine}. To je posljedica činjenice da se \textit{\textlatin{TCP}} protokolom uspostavlja isključivo \textit{jedan kanal}, te je jasno da \textit{performanse komunikacije bivaju degradirane} (kao što je popularno slučaj kod \textit{\textlatin{HTTP}}/2 protokola\footnote{Iako je \textit{\textlatin{HTTP}}/2 protokol uveo više kanala, to je isključivo implementacija na aplikativnom nivou - u pozadini se oni \textit{multipleksiraju} na jednom \textit{\textlatin{TCP}} kanalu. Svakako, ovo predstavlja poboljšanje u odnosu na \textit{\textlatin{HTTP}}/1 protokol.}, koji se oslanja na \textit{\textlatin{TCP}}). Ovaj problem u literaturi, kao i u praksi, je poznat kao \textit{\textbf{\textlatin{head-of-line blocking}}}.
 
 \subsection{Uspostavljanje konekcije između čvorova kroz \textit{\textlatin{TCP}} protokol}
 
@@ -13,3 +11,65 @@ Operacije \textit{\textlatin{TCP}} protokola podjeljene su u tri faze
     \item \textbf{Period transfera podataka}.
     \item \textbf{Prekid konekcije}, nakon završetka prenosa podataka, nakon čega dolazi do oslobađanja zauzetih resursa na čvorovima.
 \end{itemize}
+
+\subsection{Struktura \textit{\textlatin{TCP}} paketa (segmenta)}
+Osnovna jedinica podataka u \textit{\textlatin{TCP}} protokolu naziva se \textbf{segment}. Da bi omogućio pouzdanost, uređenu isporuku i kontrolu zagušenja, \textit{\textlatin{TCP}} segment ima znatno veće i kompleksnije zaglavlje. Minimalna veličina zaglavlja je $20$ bajtova, a može ići čak $60$ bajtova, u zavisnosti od prisustva opcionih polja.
+
+\begin{table}[!ht]
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            \multicolumn{4}{|c|}{\textbf{32 bita}} \\
+            \hline
+            \multicolumn{2}{|c|}{\textit{0 - 15}} & \multicolumn{2}{c|}{\textit{16 - 31}} \\
+            \hline
+            \multicolumn{2}{|c|}{Izvorišni port (\textit{\textlatin{Source Port}})} & \multicolumn{2}{c|}{Odredišni port (\textit{\textlatin{Destination Port}})} \\
+            \hline
+            \multicolumn{4}{|c|}{Redni broj (\textit{\textlatin{Sequence number}})} \\
+            \hline
+            \multicolumn{4}{|c|}{Broj potvrde (\textit{\textlatin{Acknowledgment Number}})} \\
+            \hline
+            \textit{\small{\textlatin{Data Offset}}} & \textit{\small{\textlatin{Reserved}}} & \multicolumn{2}{c|}{\textit{\small{\textlatin{Flags} $+$ Veličina prozora (\textlatin{Window Size})}}} \\
+            \hline
+            \multicolumn{2}{|c|}{Kontrolni zbir (\textit{\textlatin{Checksum}})} & \multicolumn{2}{c|}{Pokazivač hitnosti (\textit{\textlatin{Urgent Pointer}})} \\
+            \hline
+            \multicolumn{4}{|c|}{Opcije (\textit{\textlatin{Options}})} \\
+            \hline
+            \multicolumn{4}{|c|}{Aplikativni podaci (\textit{\textlatin{Payload}})} \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Vizuelni prikaz \textit{\textlatin{TCP}} paketa.}
+    \label{table:tcp_header}
+\end{table}
+
+\begin{description}
+    \item[Izvorišni i odredišni port] ($16$ bita, svaki) Ova polja imaju istu funkciju kao kod \textit{\textlatin{UDP}} protokola - identifikuju proces pošiljaoca i primaoca na mrežnim čvorovima.
+
+    \item[Redni broj (\textit{\textlatin{Sequence Number}})] ($32$ bita) Ovo polje je ključno za pouzdanost i uređenost. Ono označava redni broj \textit{prvog bajta podataka} u ovom segmentu unutar cjelokupnog toka podataka (\textit{stream}). Tokom uspostavljanja veze, obje strane generišu nasumični početni redni broj (\textit{\textlatin{ISN}} - \textit{\textlatin{Initial Sequence Number}}) radi sigurnosti.
+
+    \item[Broj potvrde (\textit{\textlatin{Acknowledgment Number}})] ($32$ bita) Ako je \texttt{\textlatin{ACK}} fleg postavljen, ovo polje označava redni broj \textit{sljedećeg bajta} koji primalac očekuje da primi. Ovim mehanizmom se kumulativno potvrđuje uspješan prijem svih bajtova do tog broja.
+
+    \item[Dužina zaglavlja (\textit{\textlatin{Data Offset}})] ($4$ bita) Specificira veličinu \textit{\textlatin{TCP}} zaglavlja u $32$-bitnim riječima (blokovima od $4$ bajta).
+
+    \item[Rezervisano (\textit{\textlatin{Reserved}})] ($3$ bita) Rezervisano za buduću upotrebu i mora biti postavljeno na nulu.
+
+    \item[Flegovi (\textit{\textlatin{Flags}})] ($9$ bita) \textbf{Devet kontrolnih bitova} (flegova) koji upravljaju stanjem konekcije:
+    \begin{itemize}
+        \item \texttt{\textlatin{SYN}} (\textit{\textlatin{Synchronize}}) - Koristi se za inicijalizaciju i uspostavljanje konekcije.
+        \item \texttt{\textlatin{ACK}} (\textit{\textlatin{Acknowledgment}}) - Označava da je polje \textit{\textlatin{Acknowledgment Number}} validno.
+        \item \texttt{\textlatin{FIN}} (\textit{\textlatin{Finish}}) - Koristi se za mirno zatvaranje konekcije.
+        \item \texttt{\textlatin{RST}} (\textit{\textlatin{Reset}}) - Trenutno prekida konekciju kao odgovor na grešku.
+        \item \texttt{\textlatin{PSH}} (\textit{\textlatin{Push}}) - Signalizira prijemnoj strani da podatke iz bafera odmah proslijedi aplikaciji.
+        \item \texttt{\textlatin{URG}} (\textit{\textlatin{Urgent}}) - Označava da polje \textit{\textlatin{Urgent Pointer}} sadrži validne informacije.
+    \end{itemize}
+    Preostala tri flega (\texttt{\textlatin{NS}}, \texttt{\textlatin{CWR}}, \texttt{\textlatin{ECE}}) se koriste za \textit{eksplicitnu notifikaciju o zagušenju}.
+
+    \item[Veličina prozora (\textit{\textlatin{Window Size}})] ($16$ bita) Koristi se za \textbf{kontrolu toka i zagušenja}. Ovim poljem primalac obavještava pošiljaoca koliko bajtova podataka je spreman da prihvati, počevši od bajta specificiranog u polju \textit{\textlatin{Acknowledgment Number}}.
+    
+    \item[Kontrolni zbir (\textit{\textlatin{Checksum}})] ($16$ bita) Obavezno polje koje se koristi za provjeru integriteta zaglavlja i podataka. Kao i kod \textit{\textlatin{UDP}} protokola, računa se i nad pseudo-zaglavljem iz \textit{\textlatin{IP}} sloja.
+
+    \item[Pokazivač hitnosti (\textit{\textlatin{Urgent Pointer}})] ($16$ bita) Ako je \texttt{\textlatin{URG}} fleg postavljen, ovaj pokazivač označava kraj \enquote{hitnih} podataka unutar segmenta. \textit{Rijetko se koristi u modernim aplikacijama}.
+
+    \item[Opcije (\textit{\textlatin{Options}})] (promjenljiva dužina) Ovo polje omogućava proširenje funkcionalnosti \textit{\textlatin{TCP}} protokola.
+\end{description}

@@ -1,1 +1,76 @@
 \section{\textit{\textlatin{UDP}} protokol}
+
+Kao što smo pomenuli, protokoli transportnog sloja (de)multipleksiranjem paketa ka procesima proširuju protokole mrežnog sloja. Naravno, kako smo pomenuli da mrežni slojevi predstavljaju nepouzdane servise zbog \textit{\textlatin{best-effort}} načina razmjene paketa između komunikacionih čvorova, protokoli transportnih slojeva često na sebe stavljaju teret implementacije koja će osigurati pouzdanost komunikacije. Međutim, pouzdanost donosi i penal nad performansama protokola u vidu latencije komunikacije, a što nekada i nije prihvatljivo optimalno rješenje, u zavisnosti od situacije. Stoga, usljed potreba sistema u realnom vremenu, tolerišući gubitke i narušavanje integriteta paketa (poruka), rađa se protokol na transportnom sloju koji vrši veoma malo proširenje \textit{\textlatin{IP}} protokola na mrežnom sloju - \textbf{\textit{\textlatin{User Datagram Protocol}}} (skraćeno, \textbf{\textit{\textlatin{UDP}}}).
+
+\textit{\textlatin{UDP}} protokol predstavlja \textit{\textlatin{connectionless}} protokol - svaki paket se zasebno rutira i šalje bazirano na informacijama koji su sadržani u njemu, bez uspostavljanja bilo kakvog dogovora ili fiksnog kanala komunikacije između strana koje komuniciraju. Samim tim, dobijamo \textit{\textlatin{stateless}} protokol, bez penala na performanse komunikacije i dodatne težine prenosa paketa\footnote{Dok svaki od \textit{\textlatin{TCP}} paketa posjedjuje 20 bajtova zaglavlja, \textit{\textlatin{UDP}} prenosi samo 8 po paketu.}. Servis koji pruža \textit{\textlatin{UDP}} komunikaciju može uporedo iznijeti mnogo više aktivnih klijenata zbog same brzine protokola.
+
+Potencijalni oporavak od greške, kao i dodavanje  pouzdanosti u aplikaciji, isključivo se implementira na \textit{aplikativnom sloju}, ako je baza datog protokola \textit{\textlatin{UDP}}. Dakle, nije nativno moguće proširiti sam \textit{\textlatin{UDP}}, već je potreban dodatan rad na višim slojevima. Može se pomisliti da ovo unosi dodatnu složenost sistemu komunikacije, ali se dato ispostavilo kao ogromna mogućnost balansa između brzine, rezilijentnosti i pouzdanosti kroz \textit{\textlatin{QUIC}} protokol. Međutim, zadržavajući se isključivo na primjere upotrebe \textit{\textlatin{UDP}} protokola, oporavak od greške i pouzdanost često nisu na prvom mjestu kada aplikativni inženjeri razmatraju dati. 
+
+\subsection{Karakteristike i ograničenja \textit{\textlatin{UDP}} protokola}
+Iz jednostavne strukture \textit{\textlatin{UDP}} protokola proizilaze njegove ključne karakteristike, koje ga čine idealnim za jedne, a potpuno neprihvatljivim za druge aplikativne scenarije. Sumirajmo rečeno i dodajmo još nekoliko zaključaka o karakteristikama datog protokola.
+
+\begin{description}
+    \item[Niska latentnost] \textit{\textlatin{UDP}} ne zahtijeva proces uspostavljanja i verifikacije veze, pa prvi paket može biti poslat bez ikakvog odlaganja. Ovo je kritično za aplikacije \textit{osjetljive na vrijeme}.
+    
+    \item[Nizak nivo opterećenja] Sa zaglavljem od samo $8$ bajtova, \textit{\textlatin{UDP}} dodaje minimalnu količinu dodatnih podataka na korisnički teret, što ga čini efikasnim u pogledu propusnosti mreže. Lakoća \textit{\textlatin{UDP}} protokola ogleda se u sadržini njegovog paketa, o čemu govori naredna sekcija.
+    
+    \item[Nema kontrole zagušenja i protoka] \textit{\textlatin{UDP}} ne implementira mehanizme za kontrolu zagušenja mreže niti za kontrolu protoka podataka. Aplikacija koja koristi \textit{\textlatin{UDP}} može slati podatke brzinom kojom želi, što može dovesti do zagušenja mreže ako se ne implementira kontrola na aplikativnom sloju. Isto tako, \textit{brzi pošiljalac može lako preopteretiti sporijeg primaoca}.
+    
+    \item[Nepouzdana i neuređena isporuka] \textit{\textlatin{UDP}} ne garantuje isporuku paketa. Paketi mogu biti izgubljeni, duplirani ili neuređeni. Aplikacija koja zahtijeva pouzdanost i redoslijed mora sama implementirati mehanizme za detekciju i oporavak od greške i gubitaka.
+    
+    \item[Podrška za \textit{\textlatin{multicast}} i \textit{\textlatin{broadcast}}] Zbog svoje \textit{\textit{\textlatin{connectionless}}} prirode, \textit{\textlatin{UDP}} je pogodan za slanje paketa većem broju primalaca istovremeno (engl., \textit{\textlatin{multicasting}}) ili svim uređajima na mreži (engl., \textit{\textlatin{broadcasting}}).
+\end{description}
+
+\subsection{Struktura \textit{\textlatin{UDP}} paketa}
+Pogledajmo sada kako izgleda jedan \textit{\textlatin{UDP}} paket. Zaglavlje \textit{\textlatin{UDP}} paketa, zbog inherentne jednostavnosti protokola, jeste izuzetno male, fiksne veličine od 8 bajtova (64 bita), sastojeći se od četiri polja. Vizuelni prikaz čitavog paketa, uključujući i zaglavlje, dat je u \ref{table:udp_header}.
+\begin{table}[!ht]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \hline
+            \multicolumn{2}{|c|}{\textbf{32 bita}} \\
+            \hline
+            $0-15$ & $16-31$ \\
+            \hline
+            Izvorišni port (\textit{\textlatin{Source Port}}) & Odredišni port (\textit{\textlatin{Destination Port}}) \\
+            \hline
+            Dužina (\textit{\textlatin{Length}}) & Kontrolni zbir (\textit{\textlatin{Checksum}}) \\
+            \hline
+            \multicolumn{2}{|c|}{Aplikativni podaci (\textit{\textlatin{Payload}})} \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Vizuelni prikaz \textit{\textlatin{UDP}} paketa.}
+    \label{table:udp_header}
+\end{table}
+
+\begin{description}
+    \item[Izvorišni port (\textit{\textlatin{Source Port}})] Ovo $16$-bitno polje identifikuje port aplikacije koja šalje podatke, na izvorišnom računaru. Klijentske aplikacije obično koriste \textit{efemerne} (\textit{privremene}) portove koje im dodjeljuje operativni sistem. Polje je opciono; ako se ne koristi, njegova vrijednost je postavljena na nulu. Server može koristiti ovu adresu za slanje odgovora klijentu, ako je potrebno.
+
+    \item[Odredišni port (\textit{\textlatin{Destination Port}})] Dato $16$-bitno polje identifikuje port aplikacije na odredišnom računaru kojoj je paket namijenjen. Ovo polje je obavezno i ključno je za \textit{multipleksiranje} - isporuku podataka ispravnom procesu na prijemnoj strani.
+
+    \item[Dužina (\textit{\textlatin{Length}})] Ovo $16$-bitno polje specificira ukupnu dužinu \textit{\textlatin{UDP}} datagrama u bajtovima. Dužina uključuje $8$ bajtova zaglavlja i promjenljivu dužinu podataka (engl. \textit{\textlatin{payload}}). Minimalna vrijednost za ovo polje je $8$ (u slučaju da \textit{\textlatin{UDP}} paket ne nosi nikakve podatke), a maksimalna (često i nedostižna) vrijednost je $65535$ bajtova\footnote{Stvarna maksimalna veličina je manja zbog ograničenja koje postavlja \textit{\textlatin{IP}} sloj ($65535$ bajtova za cijeli \textit{\textlatin{IP}} paket, uključujući i \textit{\textlatin{IP}} zaglavlje).}.
+
+    \item[Kontrolni zbir (\textit{\textlatin{Checksum}})] Ovo $16$-bitno polje se koristi za provjeru grešaka u zaglavlju i podacima. Njegova upotreba je opciona u okviru \textit{\textlatin{IPv4}}, ali je obavezna kada se \textit{\textlatin{UDP}} protokol koristi preko \textit{\textlatin{IPv6}}.
+
+    Važno je napomenuti da se kontrolni zbir ne računa samo nad \textit{\textlatin{UDP}} zaglavljem i podacima, već i nad tzv. \textbf{pseudo-zaglavljem} koje se formira od polja iz \textit{\textlatin{IP}} zaglavlja. Ovo se radi kako bi se potvrdilo da je paket stigao na ispravnu destinaciju.
+\end{description}
+
+\subsection{Sigurnosni aspekti i ranjivosti \textit{\textlatin{UDP}} protokola}
+
+\textit{\textlatin{UDP}}, u svom osnovnom dizajnu, bivajući tanka nadogradnja \textit{\textlatin{IP}} protokola mrežnog sloja, \textbf{ne nudi apsolutno nikakve mehanizme sigurnosti}. Pri kreiranju protokola, dati je zamišljen kao \textit{minimalistički}, \textit{performantan protokol na transportnom sloju}, svjesno prebacujući kompletan teret implementacije sigurnosti na aplikativni sloj. Shodno tome, podaci poslati preko \enquote{sirovog} \textit{\textlatin{UDP}} protokola su izloženi brojnim napadima, što ga čini fundamentalno neprikladnim za komunikaciju koja zahtijeva povjerljivost, integritet ili autentifikaciju bez dodatnih slojeva zaštite.
+
+Ove ranjivosti se mogu kategorizovati na sljedeći način:
+\begin{description}
+    \item[Nedostatak povjerljivosti (prisluškivanje)] Svi podaci unutar \textit{\textlatin{UDP}} paketa, uključujući i aplikativni dio, prenose se kao čisti tekst. Bilo koji (maliciozni) čvor na putanji između pošiljaoca i primaoca može bez poteškoća presresti i pročitati cjelokupan sadržaj komunikacije. Ovo je poznato kao \textit{\textlatin{Man-in-the-Middle}} napad prisluškivanja. U kontekstu konsenzus algoritama i \textit{\textlatin{blockchain}} sistema, ovo bi moglo otkriti osjetljive metapodatke o transakcijama, adrese učesnika ili sadržaj poruka koje se razmjenjuju između čvorova prije nego što su kriptografski obrađene na aplikativnom nivou.
+
+    \item[Nedostatak integriteta (modifikacija podataka)] Jedina provjera integriteta koju \textit{\textlatin{UDP}} nudi jeste opciono polje za kontrolni zbir. Međutim, njegova svrha je isključivo detekcija \textit{slučajnih} grešaka nastalih tokom prenosa, a ne \textit{malicioznih} izmjena. Bilo koji čvor, kao što smo pomenuli, može presresti paket, izmijeniti njegov sadržaj, ponovo izračunati veoma jednostavan kontrolni zbir i proslijediti paket ka originalnom primaocu. Primalac neće imati mehanizam da utvrdi da su podaci kompromitovani.
+
+    \item[Nedostatak autentifikacije (lažiranje identiteta)] \textit{\textlatin{UDP}} ne posjeduje mehanizam za potvrdu identiteta pošiljaoca. Pošto ne postoji proces prevremenog uspostavljanja sigurnih komunikacionih kanala, bilo koji čvor može jednostavno kreirati \textit{\textlatin{UDP}} paket i u polje za izvorišnu adresu, koje se nalazi u zaglavlju, upisati bilo koju vrijednost. U praksi, ovo je poznato kao \textit{\textlatin{IP spoofing}}. Prijemni čvor nema nativan način da provjeri da li paket zaista potiče sa navedene adrese.
+\end{description}
+
+\subsubsection{Prevazilaženje \textit{\textlatin{UDP}} sigurnosnih nedostataka}
+Zbog navedenih ranjivosti, korišćenje \textit{\textlatin{UDP}}-a za komunikaciju koja iziskuje sigurnosne mehanizme, potrebna su proširenja i implementacije na višim slojevima. Istorijski, najpoznatije rješenje je \textbf{\textit{\textlatin{DTLS}} (\textit{\textlatin{Datagram Transport Layer Security}})}, koje predstavlja adaptaciju \textit{\textlatin{TLS}} protokola za \textit{\textlatin{UDP}}. \textit{\textlatin{DTLS}} enkapsulira podatke i pruža povjerljivost, integritet i autentifikaciju, ali zadržava semantiku paketa. Međutim, \textit{\textlatin{DTLS}} donosi i sopstvenu kompleksnost i probleme poput povećane latentnosti pri uspostavljanju veze.
+
+Upravo iz ovih fundamentalnih nedostataka \textit{\textlatin{UDP}}-a i ograničenja postojećih rješenja rađa se \textbf{\textit{\textlatin{QUIC}}} protokol. On nije samo dodatak na \textit{\textlatin{UDP}}, već protokol koji integriše sigurnost u svoju srž, a o čemu će biti riječi u narednoj glavi rada.
+
+Sada, proučimo detalje \textit{\textlatin{TCP}} protokola, kao \textit{sigurniju} ali \textit{latentniju} varijantu protokola na transportnom sloju.
