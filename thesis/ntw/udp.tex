@@ -1,4 +1,4 @@
-\section{\textit{\textlatin{UDP}} protokol}
+\section{\textit{\textlatin{UDP}} mrežni protokol}
 
 Kao što smo pomenuli, protokoli transportnog sloja (de)multipleksiranjem paketa ka procesima proširuju protokole mrežnog sloja. Naravno, kako smo pomenuli da mrežni slojevi predstavljaju nepouzdane servise zbog \textit{\textlatin{best-effort}} načina razmjene paketa između komunikacionih čvorova, protokoli transportnih slojeva često na sebe stavljaju teret implementacije koja će osigurati pouzdanost komunikacije. Međutim, pouzdanost donosi i penal nad performansama protokola u vidu latencije komunikacije, a što nekada i nije prihvatljivo optimalno rješenje, u zavisnosti od situacije. Stoga, usljed potreba sistema u realnom vremenu, tolerišući gubitke i narušavanje integriteta paketa (poruka), rađa se protokol na transportnom sloju koji vrši veoma malo proširenje \textit{\textlatin{IP}} protokola na mrežnom sloju - \textbf{\textit{\textlatin{User Datagram Protocol}}} (skraćeno, \textbf{\textit{\textlatin{UDP}}}).
 
